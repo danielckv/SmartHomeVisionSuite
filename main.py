@@ -2,6 +2,8 @@ import argparse
 import signal
 
 import cv2
+import pyvirtualcam
+
 from src.camera import Camera
 from src.detection import Detection
 from src.stream import VideoStream
@@ -26,30 +28,30 @@ if __name__ == "__main__":
 
     detector = Detection()
     camera = Camera(0, 640, 480)
-    video_stream = VideoStream(config['videoStream']['url'])
-    video_stream.start()
 
     signal.signal(signal.SIGINT, signal_handler)
 
-    while True:
-        original_frame = camera.get_frame()
+    with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
+        while True:
+            original_frame = camera.get_frame()
 
-        # Process frame
-        frame_with_detections = detector.process_frame(original_frame)
-        detected_person = detector.is_person(original_frame)
-        if detected_person:
-            object_frame = detector.cut_frame_to_object(original_frame)
-            save_frame_to_jpeg(object_frame)
-            print("Person detected. Frame saved.")
+            # Process frame
+            frame_with_detections = detector.process_frame(original_frame)
+            detected_person = detector.is_person(original_frame)
+            if detected_person:
+                object_frame = detector.cut_frame_to_object(original_frame)
+                save_frame_to_jpeg(object_frame)
+                print("Person detected. Frame saved.")
 
-        video_stream.write_frame(frame_with_detections)
+            cam.send(frame_with_detections)
+            cam.sleep_until_next_frame()
 
-        # Display the resulting frame
-        if debug:
-            cv2.imshow('frame', frame_with_detections)
-        if cv2.waitKey(1) & 0xFF == ord('q') or not app_state['running']:
-            break
+            # Display the resulting frame
+            if debug:
+                cv2.imshow('frame', frame_with_detections)
+            if cv2.waitKey(1) & 0xFF == ord('q') or not app_state['running']:
+                break
+        cam.close()
 
-    video_stream.stop()
     camera.release()
     cv2.destroyAllWindows()
