@@ -12,7 +12,7 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
 
 
 class Detection:
-    def __init__(self, threshold=0.7):
+    def __init__(self, threshold=0.8):
 
         models_dir = os.path.join(CURRENT_DIR_APP, 'models')
 
@@ -51,7 +51,7 @@ class Detection:
         detections = self.model.forward()
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
-            if confidence > 0.4:  # Confidence threshold
+            if confidence > 0.67:  # Confidence threshold
                 # Get bounding box coordinates and draw
                 box = detections[0, 0, i, 3:7] * np.array(
                     [frame.shape[1], frame.shape[0], frame.shape[1], frame.shape[0]])
