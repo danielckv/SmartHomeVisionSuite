@@ -1,14 +1,55 @@
-import cv2  # OpenCV
-from src.camera import Camera
-from src.detection import Detector  # Your TensorFlow detector
+import argparse
+import signal
 
-# ...
+import cv2
+from src.camera import Camera
+from src.detection import Detection
+from src.stream import VideoStream
+from src.utils import save_frame_to_jpeg, load_config_yaml
+
+app_state = {
+    'camera': None,
+    'detector': None,
+    'running': True,
+    'zeromq': None
+}
+
+
+def signal_handler(sig, last_frame=None):
+    app_state['running'] = False
+    print(f"Signal {sig} received. Exiting...")
+
 
 if __name__ == "__main__":
-    # Load configurations
-    # Initialize cameras
-    detector = Detector(...)
+    config = load_config_yaml()
+    debug = config['debug']
+
+    detector = Detection()
     camera = Camera(0, 640, 480)
+    video_stream = VideoStream(config['videoStream']['url'])
+    video_stream.start()
+
+    signal.signal(signal.SIGINT, signal_handler)
 
     while True:
-        frame = camera.get_frame()
+        original_frame = camera.get_frame()
+
+        # Process frame
+        frame_with_detections = detector.process_frame(original_frame)
+        detected_person = detector.is_person(original_frame)
+        if detected_person:
+            object_frame = detector.cut_frame_to_object(original_frame)
+            save_frame_to_jpeg(object_frame)
+            print("Person detected. Frame saved.")
+
+        video_stream.write_frame(frame_with_detections)
+
+        # Display the resulting frame
+        if debug:
+            cv2.imshow('frame', frame_with_detections)
+        if cv2.waitKey(1) & 0xFF == ord('q') or not app_state['running']:
+            break
+
+    video_stream.stop()
+    camera.release()
+    cv2.destroyAllWindows()
