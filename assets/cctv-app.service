@@ -1,0 +1,16 @@
+[Unit]
+Description=Python Application with Local Virtual Environment
+After=network.target
+
+[Service]
+Type=simple
+User=danielckv  # Replace if using a different user
+WorkingDirectory=/home/danielckv/localSetup
+Environment="PATH=/home/danielckv/localSetup/venv/bin:$PATH"
+ExecStart=/home/danielckv/localSetup/venv/bin/python main.py
+
+# Restart on failure (optional)
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
