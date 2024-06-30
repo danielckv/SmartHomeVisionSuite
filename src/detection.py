@@ -10,6 +10,8 @@ CLASSES = ["background", "aeroplane", "bicycle", "bird", "boat",
            "dog", "horse", "motorbike", "person", "pottedplant", "sheep",
            "sofa", "train", "tvmonitor"]
 
+ONLY_CLASSES = ["person", "dog"]
+
 
 class Detection:
     def __init__(self, threshold=0.8):
@@ -20,14 +22,14 @@ class Detection:
                                               models_dir + '/MobileNetSSD_deploy.caffemodel')
         self.threshold = threshold
 
-    def is_person(self, frame):
+    def is_person_or_dog(self, frame):
         blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 480), 127.5)
         self.model.setInput(blob)
         detections = self.model.forward()
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence > self.threshold:
-                if CLASSES[int(detections[0, 0, i, 1])] == "person":
+                if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
                     return True
         return False
 
