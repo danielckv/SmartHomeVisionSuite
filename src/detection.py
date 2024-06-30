@@ -54,14 +54,14 @@ class Detection:
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence > 0.67:  # Confidence threshold
-                # Get bounding box coordinates and draw
-                box = detections[0, 0, i, 3:7] * np.array(
-                    [frame.shape[1], frame.shape[0], frame.shape[1], frame.shape[0]])
-                (startX, startY, endX, endY) = box.astype("int")
-                cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
-
                 # Get label text
                 if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
+                    # Get bounding box coordinates and draw
+                    box = detections[0, 0, i, 3:7] * np.array(
+                        [frame.shape[1], frame.shape[0], frame.shape[1], frame.shape[0]])
+                    (startX, startY, endX, endY) = box.astype("int")
+                    cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
+
                     label_text = CLASSES[int(detections[0, 0, i, 1])]
                     # Add label and confidence score
                     label = "{}: {:.2f}%".format(label_text, confidence * 100)
