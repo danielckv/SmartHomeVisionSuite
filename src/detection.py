@@ -61,8 +61,9 @@ class Detection:
                 cv2.rectangle(frame, (startX, startY), (endX, endY), (0, 255, 0), 2)
 
                 # Get label text
-                label_text = CLASSES[int(detections[0, 0, i, 1])]
-                # Add label and confidence score
-                label = "{}: {:.2f}%".format(label_text, confidence * 100)
-                cv2.putText(frame, label, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+                if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
+                    label_text = CLASSES[int(detections[0, 0, i, 1])]
+                    # Add label and confidence score
+                    label = "{}: {:.2f}%".format(label_text, confidence * 100)
+                    cv2.putText(frame, label, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
         return frame

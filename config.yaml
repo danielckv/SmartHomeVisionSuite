@@ -1,6 +1,6 @@
 debug: false
 videoStream:
-    url: "rtmp://localhost:1935/live/cctv"
+    url: "rtmp://localhost:1935/cctv"
     username: ""
     password: ""
 imageSize:
