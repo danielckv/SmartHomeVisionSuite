@@ -23,10 +23,11 @@ if __name__ == "__main__":
 
     detector = Detection()
     camera = Camera(0, 640, 480)
-
+    print("Camera initialized.")
     signal.signal(signal.SIGINT, signal_handler)
 
-    out_camera = cv2.VideoWriter('/dev/video1', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (640, 480))
+    out_camera = cv2.VideoWriter('/dev/video0', cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'), 10, (640, 480))
+    print("VideoWriter initialized.")
 
     while True:
         original_frame = camera.get_frame()
