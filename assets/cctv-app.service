@@ -4,12 +4,11 @@ After=network.target
 
 [Service]
 Type=simple
-User=danielckv  # Replace if using a different user
+User=danielckv
 WorkingDirectory=/home/danielckv/localSetup
-Environment="PATH=/home/danielckv/localSetup/venv/bin:$PATH"
+Environment="PATH=/home/danielckv/localSetup/venv/bin:/usr/bin:/usr/bin/ffmpeg:/:$PATH"
 ExecStart=/home/danielckv/localSetup/venv/bin/python main.py
 
-# Restart on failure (optional)
 Restart=on-failure
 
 [Install]

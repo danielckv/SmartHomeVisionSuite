@@ -21,7 +21,8 @@ class VideoStream:
                 "-framerate", str(10),
                 "-i", "-",
                 "-c:v", codec,
-                "-f", "rtsp",
+                "-preset", "veryfast",
+                "-f", "flv",
                 self.url
             ]
             if bitrate:
