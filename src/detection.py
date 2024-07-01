@@ -22,17 +22,6 @@ class Detection:
                                               models_dir + '/MobileNetSSD_deploy.caffemodel')
         self.threshold = threshold
 
-    def is_person_or_dog(self, frame):
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 480), 127.5)
-        self.model.setInput(blob)
-        detections = self.model.forward()
-        for i in range(detections.shape[2]):
-            confidence = detections[0, 0, i, 2]
-            if confidence > self.threshold:
-                if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
-                    return True
-        return False
-
     def cut_frame_to_object(self, frame):
         blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 480), 127.5)
         self.model.setInput(blob)
@@ -48,6 +37,7 @@ class Detection:
         return None
 
     def process_frame(self, frame):
+        is_object_detected = False
         blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 480), 127.5)
         self.model.setInput(blob)
         detections = self.model.forward()
@@ -56,6 +46,7 @@ class Detection:
             if confidence > 0.67:  # Confidence threshold
                 # Get label text
                 if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
+                    is_object_detected = True
                     # Get bounding box coordinates and draw
                     box = detections[0, 0, i, 3:7] * np.array(
                         [frame.shape[1], frame.shape[0], frame.shape[1], frame.shape[0]])
@@ -66,4 +57,4 @@ class Detection:
                     # Add label and confidence score
                     label = "{}: {:.2f}%".format(label_text, confidence * 100)
                     cv2.putText(frame, label, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        return frame
+        return frame, is_object_detected

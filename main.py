@@ -33,8 +33,7 @@ if __name__ == "__main__":
         original_frame = camera.get_frame()
 
         # Process frame
-        frame_with_detections = detector.process_frame(original_frame)
-        detected_person = detector.is_person_or_dog(original_frame)
+        frame_with_detections, detected_person = detector.process_frame(original_frame)
         if detected_person:
             object_frame = detector.cut_frame_to_object(original_frame)
             save_frame_to_jpeg(object_frame)
