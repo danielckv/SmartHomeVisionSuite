@@ -37,7 +37,6 @@ if __name__ == "__main__":
         if detected_person:
             object_frame = detector.cut_frame_to_object(original_frame)
             save_frame_to_jpeg(object_frame)
-            print("Person detected. Frame saved.")
 
         local_stream.write_frame(frame_with_detections)
 

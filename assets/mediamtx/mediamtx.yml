@@ -278,7 +278,7 @@ rtmpServerCert: server.crt
 # Global settings -> HLS server
 
 # Enable reading streams with the HLS protocol.
-hls: false
+hls: no
 # Address of the HLS listener.
 hlsAddress: :8888
 # Enable TLS/HTTPS on the HLS server.
@@ -291,16 +291,9 @@ hlsEncryption: no
 hlsServerKey: server.key
 # Path to the server certificate.
 hlsServerCert: server.crt
-# Value of the Access-Control-Allow-Origin header provided in every HTTP response.
-# This allows to play the HLS stream from an external website.
-hlsAllowOrigin: '*'
-# List of IPs or CIDRs of proxies placed before the HLS server.
-# If the server receives a request from one of these entries, IP in logs
-# will be taken from the X-Forwarded-For header.
-hlsTrustedProxies: []
 # By default, HLS is generated only when requested by a user.
 # This option allows to generate it always, avoiding the delay between request and generation.
-hlsAlwaysRemux: yes
+hlsAlwaysRemux: no
 # Variant of the HLS protocol to use. Available options are:
 # * mpegts - uses MPEG-TS segments, for maximum compatibility.
 # * fmp4 - uses fragmented MP4 segments, more efficient.
@@ -309,13 +302,13 @@ hlsVariant: fmp4
 # Number of HLS segments to keep on the server.
 # Segments allow to seek through the stream.
 # Their number doesn't influence latency.
-hlsSegmentCount: 7
+hlsSegmentCount: 3
 # Minimum duration of each segment.
 # A player usually puts 3 segments in a buffer before reproducing the stream.
 # The final segment duration is also influenced by the interval between IDR frames,
 # since the server changes the duration in order to include at least one IDR frame
 # in each segment.
-hlsSegmentDuration: 250ms
+hlsSegmentDuration: 1s
 # Minimum duration of each part.
 # A player usually puts 3 parts in a buffer before reproducing the stream.
 # Parts are used in Low-Latency HLS in place of segments.
@@ -324,7 +317,14 @@ hlsSegmentDuration: 250ms
 hlsPartDuration: 100ms
 # Maximum size of each segment.
 # This prevents RAM exhaustion.
-hlsSegmentMaxSize: 15M
+hlsSegmentMaxSize: 24M
+# Value of the Access-Control-Allow-Origin header provided in every HTTP response.
+# This allows to play the HLS stream from an external website.
+hlsAllowOrigin: '*'
+# List of IPs or CIDRs of proxies placed before the HLS server.
+# If the server receives a request from one of these entries, IP in logs
+# will be taken from the X-Forwarded-For header.
+hlsTrustedProxies: []
 # Directory in which to save segments, instead of keeping them in the RAM.
 # This decreases performance, since reading from disk is less performant than
 # reading from RAM, but allows to save RAM.
