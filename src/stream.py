@@ -18,11 +18,11 @@ class VideoStream:
                 "-f", "rawvideo",
                 "-pixel_format", "bgr24",
                 "-video_size", f"1280x720",
-                "-framerate", str(20),
+                "-framerate", str(25),
                 "-i", "-",
                 "-c:v", codec,
-                "-preset", "slow",
-                "-g", str(10),
+                "-preset", "veryfast",
+                "-g", str(15),
                 "-f", "rtsp",
                 self.url
             ]

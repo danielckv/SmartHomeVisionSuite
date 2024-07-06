@@ -43,7 +43,7 @@ class Detection:
         detections = self.model.forward()
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
-            if confidence > 0.67:  # Confidence threshold
+            if confidence > 0.70:  # Confidence threshold
                 # Get label text
                 if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
                     is_object_detected = True
