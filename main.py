@@ -24,7 +24,7 @@ def capture_and_detect():
     camera = Camera(0, 1280, 960)
 
     local_stream = VideoStream(config['videoStream']['url'])
-    local_stream.start()
+    local_stream.start_local_server()
 
     while True:
         ret, original_frame = camera.cap.read()
@@ -37,7 +37,7 @@ def capture_and_detect():
             object_frame = detector.cut_frame_to_object(original_frame)
             save_frame_to_jpeg(object_frame)
 
-        asyncio.create_task(local_stream.write_frame(frame_with_detections))
+        local_stream.send_frame_to_local_server(frame_with_detections)
 
         # Display the resulting frame
         if debug:

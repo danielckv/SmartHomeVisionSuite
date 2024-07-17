@@ -1,4 +1,5 @@
 import subprocess
+import cv2
 
 
 class VideoStream:
@@ -9,6 +10,20 @@ class VideoStream:
         print(f"URL: {self.url}")
         print(f"Stream Name: {self.stream_name}")
         self.process_thread = None
+        self.local_server_instance = None
+
+    def start_local_server(self):
+        self.local_server_instance = cv2.VideoWriter(
+            'appsrc ! videoconvert ! '
+            'x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! '
+            'rtph264pay config-interval=1 ! udpsink host=127.0.0.1 port=5000',
+            cv2.CAP_GSTREAMER, 0, 20, (640, 480), True)
+
+    def send_frame_to_local_server(self, frame):
+        if self.local_server_instance:
+            self.local_server_instance.write(frame)
+        else:
+            print("Local server is not running. Cannot write frame.")
 
     def start(self, codec="h264", bitrate="2M"):
         print(f"Starting video stream from {self.url}...")
@@ -44,4 +59,8 @@ class VideoStream:
         if self.process_thread:
             self.process_thread.terminate()
             self.process_thread = None
+
+        if self.local_server_instance:
+            self.local_server_instance.release()
+            self.local_server_instance = None
         print("Video stream stopped.")
