@@ -17,6 +17,9 @@ def save_frame_to_jpeg(frame):
     if not should_save_frame_period():
         return
 
+    if frame is None:
+        return
+
     filename = datetime.datetime.now().strftime("%Y%m%d-%H%M%S") + ".jpg"
     filename = os.path.join(CURRENT_SNAPSHOTS_DIR, filename)
     cv2.imwrite(filename, frame)

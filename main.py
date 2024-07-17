@@ -1,5 +1,7 @@
 import signal
 import cv2
+import pyvirtualcam
+
 from src.camera import Camera
 from src.detection import Detection
 from src.stream import VideoStream
@@ -25,31 +27,30 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     detector = Detection()
     camera = Camera(0, 1280, 960)
+    with pyvirtualcam.Camera(width=1280, height=960, fps=20) as cam:
+        while True:
+            ret, original_frame = camera.cap.read()
+            if not ret:
+                print("Can't receive frame (stream end?). Exiting...")
+                break
 
-    local_stream = VideoStream(config['videoStream']['url'])
-    local_stream.start_local_server()
+            # Process frame
+            frame_with_detections, detected_person = detector.process_frame(original_frame)
+            if detected_person:
+                original_frame = detector.cut_frame_to_object(original_frame)
+                print("Person detected!")
+                save_frame_to_jpeg(original_frame)
 
-    while True:
-        ret, original_frame = camera.cap.read()
-        if not ret:
-            print("Can't receive frame (stream end?). Exiting...")
-            break
+            cam.send(original_frame)
 
-        # Process frame
-        frame_with_detections, detected_person = detector.process_frame(original_frame)
-        if detected_person:
-            object_frame = detector.cut_frame_to_object(original_frame)
-            save_frame_to_jpeg(object_frame)
+            # Sleep until the next frame time
+            cam.sleep_until_next_frame()
 
-        local_stream.send_frame_to_local_server(frame_with_detections)
-
-        # Display the resulting frame
-        if debug:
-            cv2.imshow('frame', frame_with_detections)
-        if cv2.waitKey(1) & 0xFF == ord('q') or not app_state['running']:
-            break
+            # Display the resulting frame
+            if debug:
+                cv2.imshow('frame', frame_with_detections)
+            if cv2.waitKey(1) & 0xFF == ord('q') or not app_state['running']:
+                break
 
     camera.release()
-    local_stream.stop()
-
     cv2.destroyAllWindows()
