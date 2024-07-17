@@ -23,7 +23,7 @@ class Detection:
         self.threshold = threshold
 
     def cut_frame_to_object(self, frame):
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (1280, 720), 127.5)
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (960, 256), 127.5)
         self.model.setInput(blob)
         detections = self.model.forward()
         for i in range(detections.shape[2]):
@@ -38,7 +38,7 @@ class Detection:
 
     def process_frame(self, frame):
         is_object_detected = False
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (1280, 720), 127.5)
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (960, 256), 127.5)
         self.model.setInput(blob)
         detections = self.model.forward()
         for i in range(detections.shape[2]):

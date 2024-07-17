@@ -23,14 +23,14 @@ if __name__ == "__main__":
     debug = config['debug']
 
     detector = Detection()
-    camera = Camera(0, 1280, 720)
+    camera = Camera(0, 960, 256)
     local_stream = VideoStream(config['videoStream']['url'])
     local_stream.start()
 
     signal.signal(signal.SIGINT, signal_handler)
 
     while True:
-        original_frame = camera.get_frame()
+        original_frame = camera.cap.read()[1]
 
         # Process frame
         frame_with_detections, detected_person = detector.process_frame(original_frame)
