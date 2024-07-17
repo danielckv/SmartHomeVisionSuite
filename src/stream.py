@@ -32,13 +32,12 @@ class VideoStream:
 
         print("Video stream started.")
 
-    def write_frame(self, frame):
+    async def write_frame(self, frame):
         if self.process_thread:
             self.process_thread.stdin.write(frame.tostring())
             self.process_thread.stdin.flush()
         else:
             print("Video stream is not running. Cannot write frame.")
-            exit(1)
 
     def stop(self):
         print("Stopping video stream...")
