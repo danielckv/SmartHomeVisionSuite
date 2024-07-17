@@ -36,10 +36,10 @@ if __name__ == "__main__":
             original_frame = cv2.resize(original_frame, (640, 360))
 
             # Process frame
-            frame_with_detections, detected_person = detector.process_frame(original_frame)
+            frame_with_detections, detected_person, detections = detector.process_frame(original_frame)
             if detected_person:
                 original_frame = frame_with_detections
-                to_save = detector.cut_frame_to_object(original_frame)
+                to_save = detector.cut_frame_to_object(original_frame, detections)
                 print("Person detected!")
                 save_frame_to_jpeg(to_save)
 

@@ -22,10 +22,7 @@ class Detection:
                                               models_dir + '/MobileNetSSD_deploy.caffemodel')
         self.threshold = threshold
 
-    def cut_frame_to_object(self, frame):
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 360), 127.5)
-        self.model.setInput(blob)
-        detections = self.model.forward()
+    def cut_frame_to_object(self, frame, detections):
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
             if confidence > self.threshold:
@@ -43,7 +40,7 @@ class Detection:
         detections = self.model.forward()
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
-            if confidence > 0.70:  # Confidence threshold
+            if confidence > 0.40:  # Confidence threshold
                 # Get label text
                 if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
                     is_object_detected = True
@@ -57,4 +54,4 @@ class Detection:
                     # Add label and confidence score
                     label = "{}: {:.2f}%".format(label_text, confidence * 100)
                     cv2.putText(frame, label, (startX, startY - 5), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-        return frame, is_object_detected
+        return frame, is_object_detected, detections
