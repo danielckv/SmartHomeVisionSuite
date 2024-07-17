@@ -1,3 +1,4 @@
+import asyncio
 import signal
 import cv2
 from src.camera import Camera
@@ -18,19 +19,17 @@ def signal_handler(sig, last_frame=None):
     print(f"Signal {sig} received. Exiting...")
 
 
-if __name__ == "__main__":
-    config = load_config_yaml()
-    debug = config['debug']
-
+def capture_and_detect():
     detector = Detection()
     camera = Camera(0, 1280, 960)
+
     local_stream = VideoStream(config['videoStream']['url'])
     local_stream.start()
 
-    signal.signal(signal.SIGINT, signal_handler)
-
     while True:
-        original_frame = camera.cap.read()[1]
+        ret, original_frame = camera.cap.read()
+        if not ret:
+            break
 
         # Process frame
         frame_with_detections, detected_person = detector.process_frame(original_frame)
@@ -38,7 +37,7 @@ if __name__ == "__main__":
             object_frame = detector.cut_frame_to_object(original_frame)
             save_frame_to_jpeg(object_frame)
 
-        local_stream.write_frame(frame_with_detections)
+        asyncio.create_task(local_stream.write_frame(frame_with_detections))
 
         # Display the resulting frame
         if debug:
@@ -48,4 +47,18 @@ if __name__ == "__main__":
 
     camera.release()
     local_stream.stop()
+
+
+async def main():
+    capture_task = asyncio.create_task(capture_and_detect())
+    await capture_task
+
+
+if __name__ == "__main__":
+    config = load_config_yaml()
+    debug = config['debug']
+
+    signal.signal(signal.SIGINT, signal_handler)
+    asyncio.run(main())
+
     cv2.destroyAllWindows()
