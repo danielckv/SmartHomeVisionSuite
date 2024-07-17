@@ -10,14 +10,14 @@ class VideoStream:
         print(f"Stream Name: {self.stream_name}")
         self.process_thread = None
 
-    def start(self, codec="h264", bitrate="1M"):
+    def start(self, codec="h264", bitrate="2M"):
         print(f"Starting video stream from {self.url}...")
         if self.process_thread is None:
             command = [
                 "ffmpeg",
                 "-f", "rawvideo",
                 "-pixel_format", "bgr24",
-                "-video_size", f"960x256",
+                "-video_size", f"1280x960",
                 "-framerate", str(25),
                 "-i", "-",
                 "-c:v", codec,

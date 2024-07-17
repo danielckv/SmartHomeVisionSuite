@@ -23,7 +23,7 @@ if __name__ == "__main__":
     debug = config['debug']
 
     detector = Detection()
-    camera = Camera(0, 960, 256)
+    camera = Camera(0, 1280, 960)
     local_stream = VideoStream(config['videoStream']['url'])
     local_stream.start()
 
