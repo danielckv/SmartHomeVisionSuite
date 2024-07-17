@@ -26,7 +26,7 @@ if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal_handler)
     detector = Detection()
     camera = Camera(0, 1280, 720)
-    with pyvirtualcam.Camera(width=1280, height=720, fps=20) as cam:
+    with pyvirtualcam.Camera(width=1280, height=720, fps=30) as cam:
         while True:
             ret, original_frame = camera.cap.read()
             if not ret:
