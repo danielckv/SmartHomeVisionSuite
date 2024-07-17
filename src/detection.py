@@ -35,12 +35,12 @@ class Detection:
 
     def process_frame(self, frame):
         is_object_detected = False
-        blob = cv2.dnn.blobFromImage(frame, 0.007843, (640, 360), 127.5)
+        blob = cv2.dnn.blobFromImage(frame, 0.007843, (740, 420), 127.5)
         self.model.setInput(blob)
         detections = self.model.forward()
         for i in range(detections.shape[2]):
             confidence = detections[0, 0, i, 2]
-            if confidence > 0.40:  # Confidence threshold
+            if confidence > 0.60:  # Confidence threshold
                 # Get label text
                 if CLASSES[int(detections[0, 0, i, 1])] in ONLY_CLASSES:
                     is_object_detected = True

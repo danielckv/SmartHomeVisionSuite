@@ -23,17 +23,19 @@ if __name__ == "__main__":
     config = load_config_yaml()
     debug = config['debug']
 
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+
     signal.signal(signal.SIGINT, signal_handler)
     detector = Detection()
     camera = Camera(0, 1280, 720)
-    with pyvirtualcam.Camera(width=640, height=360, fps=15) as cam:
+    with pyvirtualcam.Camera(width=740, height=420, fps=17) as cam:
         while True:
             ret, original_frame = camera.cap.read()
             if not ret:
                 print("Can't receive frame (stream end?). Exiting...")
                 break
 
-            original_frame = cv2.resize(original_frame, (640, 360))
+            original_frame = cv2.resize(original_frame, (740, 420))
 
             # Process frame
             frame_with_detections, detected_person, detections = detector.process_frame(original_frame)
@@ -42,6 +44,10 @@ if __name__ == "__main__":
                 to_save = detector.cut_frame_to_object(original_frame, detections)
                 print("Person detected!")
                 save_frame_to_jpeg(to_save)
+
+            yuv_frame = cv2.cvtColor(original_frame, cv2.COLOR_BGR2YUV)
+            yuv_frame[:, :, 0] = clahe.apply(yuv_frame[:, :, 0])
+            original_frame = cv2.cvtColor(yuv_frame, cv2.COLOR_YUV2BGR)
 
             cam.send(original_frame)
 
