@@ -1,4 +1,3 @@
-import asyncio
 import signal
 import cv2
 from src.camera import Camera
@@ -19,7 +18,11 @@ def signal_handler(sig, last_frame=None):
     print(f"Signal {sig} received. Exiting...")
 
 
-def capture_and_detect():
+if __name__ == "__main__":
+    config = load_config_yaml()
+    debug = config['debug']
+
+    signal.signal(signal.SIGINT, signal_handler)
     detector = Detection()
     camera = Camera(0, 1280, 960)
 
@@ -29,6 +32,7 @@ def capture_and_detect():
     while True:
         ret, original_frame = camera.cap.read()
         if not ret:
+            print("Can't receive frame (stream end?). Exiting...")
             break
 
         # Process frame
@@ -47,18 +51,5 @@ def capture_and_detect():
 
     camera.release()
     local_stream.stop()
-
-
-async def main():
-    capture_task = asyncio.create_task(capture_and_detect())
-    await capture_task
-
-
-if __name__ == "__main__":
-    config = load_config_yaml()
-    debug = config['debug']
-
-    signal.signal(signal.SIGINT, signal_handler)
-    asyncio.run(main())
 
     cv2.destroyAllWindows()

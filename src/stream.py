@@ -13,11 +13,19 @@ class VideoStream:
         self.local_server_instance = None
 
     def start_local_server(self):
-        self.local_server_instance = cv2.VideoWriter(
-            'appsrc ! videoconvert ! '
-            'x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! '
-            'rtph264pay config-interval=1 ! udpsink host=127.0.0.1 port=5000',
-            cv2.CAP_GSTREAMER, 0, 20, (640, 480), True)
+        self.local_server_instance = out = cv2.VideoWriter(
+            'appsrc ! videoconvert ! x264enc tune=zerolatency '
+            'bitrate=500 speed-preset=superfast ! rtph264pay name=pay0 pt=96 ! '
+            'application/x-rtp,media=video,encoding-name=H264,'
+            'payload=96 ! rtspclientsink location=rtsp://127.0.0.1:8554/cctv',
+            cv2.CAP_GSTREAMER,
+            0,
+            20,
+            (640, 480),
+            True
+        )
+
+        print("Local server started.")
 
     def send_frame_to_local_server(self, frame):
         if self.local_server_instance:
