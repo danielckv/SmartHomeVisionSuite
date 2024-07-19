@@ -688,6 +688,9 @@ pathDefaults:
 # for example "~^(test1|test2)$" will match both "test1" and "test2",
 # for example "~^prefix" will match all paths that start with "prefix".
 paths:
+  camera01:
+    runOnInit: ffmpeg -f video4linux2 -input_format h264 -video_size 1280x720 -framerate 30 -i /dev/video0 -vcodec copy
+    runOnInitRestart: yes
   # Settings under path "all_others" are applied to all paths that
   # do not match another entry.
   all_others:
