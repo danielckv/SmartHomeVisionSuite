@@ -3,18 +3,25 @@ import numpy as np
 
 
 class Camera:
-    def __init__(self, camera_id: int, width: int, height: int):
-        self.camera_id = camera_id
+
+    def __init__(self, source = None, width: int = 0, height: int = 0):
+        self.camera = source
         self.width = width
+        self.cap = None
         self.height = height
-        self.cap = cv2.VideoCapture(camera_id)
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        self.setup_capture()
+
+    def setup_capture(self):
+        self.cap = cv2.VideoCapture(self.camera)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+
+    # existing methods omitted for brevity
 
     def get_frame(self) -> np.ndarray:
         ret, frame = self.cap.read()
         if not ret:
-            raise RuntimeError(f"Failed to read frame from camera {self.camera_id}")
+            raise RuntimeError(f"Failed to read frame from camera {self.camera}")
         return frame
 
     def release(self):
