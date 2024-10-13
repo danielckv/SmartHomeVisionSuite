@@ -7,7 +7,7 @@ Type=simple
 User=danielckv
 WorkingDirectory=/home/danielckv/localSetup
 Environment="PATH=/home/danielckv/localSetup/venv/bin:/usr/bin:/usr/bin/ffmpeg:/:$PATH"
-ExecStart=/home/danielckv/localSetup/venv/bin/python main.py
+ExecStart=/home/danielckv/localSetup/venv/bin/python bootstrap.py
 
 Restart=on-failure
 
