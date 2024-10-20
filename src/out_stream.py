@@ -1,19 +1,30 @@
-import av
+import ffmpeg
 
 
 class RTSPFrameStreamer:
     def __init__(self, rtsp_url: str):
         self.rtsp_url = rtsp_url
-        self.container = av.open(rtsp_url, mode='w')
+        self.ffmpeg_container = (
+            ffmpeg
+            .input('pipe:', format='rawvideo', pix_fmt='rgb24', s='{}x{}'.format(1270, 720), framerate=25)
+            .output(rtsp_url,
+                    format='rtsp',
+                    vcodec='libx264',
+                    pix_fmt='yuv420p',
+                    preset='ultrafast',
+                    tune='zerolatency',
+                    rtsp_transport='tcp',
+                    r='30',
+                    g='30',
+                    force_key_frames='expr:gte(t,n_forced*2)',
+                    )
+            .global_args('-hide_banner', '-loglevel', 'info')
+            .run_async(pipe_stdin=True)
+        )
 
     def write_frame(self, frame):
-        stream = self.container.streams.video[0]
-        frame_to_stream = av.VideoFrame.from_ndarray(frame, format='bgr24')
-        for packet in stream.encode(frame_to_stream.pts):
-            self.container.mux(packet)
+        self.ffmpeg_container.stdin.write(frame)
 
     def close(self):
-        for stream in self.container.streams:
-            for packet in stream.close():
-                self.container.mux(packet)
-        self.container.close()
+        self.ffmpeg_container.stdin.close()
+        self.ffmpeg_container.wait()

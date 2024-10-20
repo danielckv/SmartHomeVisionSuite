@@ -1,6 +1,6 @@
 debug: false
 videoStream:
-    url: "rtsp://127.0.0.1:8554/cctv"
+    url: "rtsp://127.0.0.1:8554/detections"
     username: ""
     password: ""
 imageSize:
